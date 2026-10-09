@@ -30,24 +30,26 @@ Ce document sert à présenter le projet et à décider. **Tous les montants son
 | Poste | Fourchette | Remarque |
 |---|---|---|
 | 8 × RTX 4090 | 17 600 à 24 000 € | Prix ci-dessus ; occasion possible mais sans garantie |
-| 2 serveurs de 4 GPU (châssis, processeur, 128 Go de RAM, alimentations) | 6 000 à 12 000 € | **Estimation personnelle**, à confirmer par devis |
+| Serveurs pour accueillir les GPU | **0 € si l'IUT en a d'adaptés** ; sinon 6 000 à 12 000 € pour 2 serveurs de 4 GPU | Estimation personnelle ; voir la section « Les serveurs de l'IUT » ci-dessous |
 | 1 carte pour l'embedding et le reranker (8 à 12 Go) | 300 à 500 € | Estimation personnelle ; voir [RAG.md](RAG.md) |
-| Stockage SSD, câblage, onduleur | 500 à 1 500 € | Estimation personnelle |
-| **Total** | **environ 24 500 à 38 000 €** | |
+| Stockage SSD, câblage, onduleur | 500 à 1 500 € | Estimation personnelle ; en partie déjà disponible à l'IUT ? |
+| **Total avec serveurs existants** | **environ 18 400 à 26 000 €** | |
+| **Total avec achat de serveurs** | **environ 24 500 à 38 000 €** | |
 
-L'estimation de départ du README (« environ 20 000 € ») était donc trop basse.
+L'estimation de départ du README (« environ 20 000 € ») n'est donc tenable que si les serveurs existants conviennent.
 
-Points à vérifier : 8 RTX 4090 ne tiennent pas dans un seul serveur classique (encombrement, alimentation, refroidissement), d'où deux machines. La licence des cartes grand public peut en interdire l'usage en datacenter (d'après mes connaissances) : à vérifier avant achat.
+Points à vérifier : 8 RTX 4090 ne tiennent pas dans un seul serveur classique (encombrement, alimentation, refroidissement), il faudrait au moins deux machines. La licence des cartes grand public peut en interdire l'usage en datacenter (d'après mes connaissances) : à vérifier avant achat.
 
 ### Option B : 2 cartes de 48 Go (RTX 6000 Ada)
 
 | Poste | Fourchette | Remarque |
 |---|---|---|
 | 2 × RTX 6000 Ada | 15 000 à 20 600 € | Prix ci-dessus |
-| 1 serveur de 2 GPU | 3 000 à 6 000 € | Estimation personnelle |
+| Serveur pour accueillir 2 GPU | **0 € si l'IUT en a un d'adapté** ; sinon 3 000 à 6 000 € | Estimation personnelle |
 | 1 carte pour l'embedding et le reranker | 300 à 500 € | Estimation personnelle |
 | Stockage, câblage, onduleur | 500 à 1 500 € | Estimation personnelle |
-| **Total** | **environ 19 000 à 29 000 €** | |
+| **Total avec serveur existant** | **environ 15 800 à 22 600 €** | |
+| **Total avec achat d'un serveur** | **environ 19 000 à 29 000 €** | |
 
 Avantages : une seule machine, bien moins de consommation, et chaque carte laisse beaucoup plus de mémoire au cache des conversations que les 5 à 6 Go d'une carte de 24 Go. Inconvénient : moins d'instances en parallèle, donc moins de tolérance à la panne d'une carte.
 
@@ -63,7 +65,24 @@ Un banc d'essai de [Spheron](https://www.spheron.network/blog/rtx-5090-vs-rtx-40
 
 Louer des cartes à l'heure (environ 0,53 €/h pour une RTX 4090 d'après [Spheron](https://www.spheron.network/blog/rtx-5090-vs-rtx-4090/), tarif en dollars non converti) donnerait, pour 8 cartes, environ 9 000 € par an en usage de 10 h par jour pendant 220 jours. C'est un ordre de grandeur, pas une offre. Cette solution sort aussi les données de l'établissement, ce qui va à l'encontre d'une idée du projet : garder les conversations sur place.
 
-## 3. Coûts de fonctionnement
+## 3. Les serveurs de l'IUT peuvent-ils accueillir des GPU ?
+
+Avoir déjà des serveurs ne suffit pas : une machine de virtualisation classique n'est en général pas faite pour recevoir des cartes graphiques. Voici ce qu'il faut vérifier sur chaque candidat (les exigences par carte viennent de mes connaissances, à confirmer sur les fiches techniques) :
+
+| Point | Pourquoi |
+|---|---|
+| **Emplacements PCIe x16 libres** et leur nombre | Une carte par emplacement ; l'option A en demande 8 au total |
+| **Place physique** | Une RTX 4090 occupe souvent 3 emplacements de large ; un serveur plat (1U/2U) ne la contient pas. Une RTX 6000 Ada fait 2 emplacements et se monte plus facilement en serveur |
+| **Alimentation** | Environ 450 W par RTX 4090 (300 W pour une RTX 6000 Ada), avec des connecteurs d'alimentation spécifiques |
+| **Refroidissement** | Plusieurs cartes dans un même châssis chauffent beaucoup |
+| **Hyperviseur** | Il doit permettre de donner un GPU à une machine virtuelle (passage direct, « GPU passthrough ») |
+| **RAM et processeur** | Quelques dizaines de Go de RAM par instance suffisent normalement ; le processeur n'est pas le facteur limitant |
+
+Si aucun serveur existant ne convient, le plus simple est d'acheter **une machine dédiée aux GPU** et de laisser les serveurs existants héberger LiteLLM, OpenWebUI et le portail.
+
+À demander à l'équipe technique de l'IUT : la liste des serveurs disponibles avec leur modèle exact (pour consulter leur fiche), le nombre d'emplacements PCIe libres, la puissance disponible et le type d'hyperviseur.
+
+## 4. Coûts de fonctionnement
 
 | Poste | Option A | Option B |
 |---|---|---|
@@ -77,7 +96,7 @@ Les puissances par carte viennent de mes connaissances et non d'une source cité
 
 **Hébergement existant.** Le BUT possède déjà des serveurs de virtualisation (voir [Contexte.md](Contexte.md)) : LiteLLM, OpenWebUI et le portail peuvent y tourner dans des machines virtuelles, sans achat supplémentaire. Seuls les serveurs à GPU sont à acheter.
 
-## 4. Risques
+## 5. Risques
 
 | Risque | Gravité | Réponse prévue |
 |---|---|---|
@@ -89,7 +108,7 @@ Les puissances par carte viennent de mes connaissances et non d'une source cité
 | Données personnelles des étudiants | Moyenne | Voir ci-dessous |
 | Le projet repose sur une seule personne | Moyenne | Documentation à jour, un référent côté IUT |
 
-## 5. Données personnelles (RGPD)
+## 6. Données personnelles (RGPD)
 
 Les conversations sont stockées et reliées à un étudiant identifié. À décider avec l'IUT avant le pilote :
 
@@ -98,8 +117,9 @@ Les conversations sont stockées et reliées à un étudiant identifié. À déc
  - l'information donnée aux étudiants sur ce qui est enregistré ;
  - la base légale et la déclaration auprès du délégué à la protection des données de l'établissement.
 
-## 6. Ce qu'il faut demander à l'IUT
+## 7. Ce qu'il faut demander à l'IUT
 
+ - Quels serveurs existants peuvent recevoir des GPU (voir section 3), ou si une machine dédiée est nécessaire.
  - Où seront installés les serveurs (salle, alimentation électrique, refroidissement) et qui paie l'électricité.
  - Si la licence des cartes grand public est un problème pour l'établissement.
  - La source de l'emploi du temps pour le portail ([site_acces_IA.md](site_acces_IA.md)).

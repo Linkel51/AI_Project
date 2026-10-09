@@ -76,8 +76,8 @@ Cible : environ 70 étudiants (deux classes) qui peuvent utiliser les IA en mêm
 
 | Option | Description | Remarque |
 |---|---|---|
-| **A (architecture de référence)** | 8 à 10 cartes de 24 Go (type RTX 4090), un conteneur vLLM par carte | Environ 24 500 à 38 000 € avec les serveurs ; estimation de 2 à 4 sessions confortables par carte, soit 16 à 32 sessions en parallèle avec 8 cartes |
-| **B** | 2 cartes de 48 Go (RTX 6000 Ada) ou H100 | Environ 19 000 à 29 000 € ; moins d'instances, mais chacune a plus de mémoire pour les longs contextes, et bien moins de consommation |
+| **A (architecture de référence)** | 8 à 10 cartes de 24 Go (type RTX 4090), un conteneur vLLM par carte | Environ 18 400 à 26 000 € si des serveurs existants conviennent, 24 500 à 38 000 € sinon ; estimation de 2 à 4 sessions confortables par carte, soit 16 à 32 sessions en parallèle avec 8 cartes |
+| **B** | 2 cartes de 48 Go (RTX 6000 Ada) ou H100 | Environ 15 800 à 22 600 € avec un serveur existant, 19 000 à 29 000 € sinon ; moins d'instances, mais chacune a plus de mémoire pour les longs contextes, et bien moins de consommation |
 
 À ajouter dans les deux cas : une **petite carte dédiée de 8 à 12 Go** pour l'embedding et le reranker du RAG (voir [RAG.md](RAG.md)).
 
