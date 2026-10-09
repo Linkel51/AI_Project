@@ -57,15 +57,9 @@ LiteLLM est le routeur et le contrôleur d'accès. Il fait quatre choses :
 3. **Répartir la charge** entre les vLLM disponibles.
 4. **Journaliser** les usages (qui, quand, combien).
 
-### Pourquoi des prompts injectés plutôt que des LoRA
+### Deux comportements, un seul modèle
 
-Le projet prévoyait deux LoRA (un « prof socratique », un « agent développeur ») chargés en même temps par vLLM. Les recherches faites montrent que c'est difficile à tenir :
-
- - il n'existe pas de LoRA officiel pour Qwen3.8 27B ; ceux trouvés sont communautaires et visent d'autres usages (finance, style, « uncensored »…) ;
- - les LoRA de tuteur socratique trouvés sont faits pour d'autres modèles de base, et un LoRA est lié à son modèle ;
- - la compatibilité du multi-LoRA avec Qwen3.8 en AWQ n'est pas confirmée.
-
-Un prompt système bien écrit, ajouté par le serveur, donne l'essentiel du comportement voulu, se modifie en quelques minutes et n'impose aucun entraînement. Les LoRA restent une option si les tests montrent que le prompt ne suffit pas.
+ARIA et ARON utilisent exactement le même modèle chargé sur les GPU. Leur différence vient uniquement du **prompt système** que LiteLLM ajoute à chaque requête, selon le modèle virtuel demandé (`aria` ou `aron`). Il n'y a aucun entraînement ni adaptateur supplémentaire : un prompt se modifie en quelques minutes, et chaque GPU peut servir indifféremment l'une ou l'autre IA.
 
 ### Comment le prompt est ajouté
 
@@ -109,6 +103,5 @@ Ces points n'ont pas pu être confirmés par la documentation. Ils se testent su
 |---|---|---|
 | 1 | vLLM démarre l'AWQ de Qwen3.8 27B sur un seul GPU, avec un `--max-model-len` utile | Les exemples trouvés utilisent 2 GPU (`--tensor-parallel-size 2`). Si un GPU ne suffit pas, il faut 2 GPU par instance et le nombre d'instances est divisé par deux. |
 | 2 | Nombre de requêtes parallèles avant que la latence ne devienne gênante, avec Cline et avec le RAG | Dimensionne tout l'achat. |
-| 3 | Le hook LiteLLM ajoute bien le prompt, sans conflit avec Cline ni avec OpenWebUI | Remplace les LoRA. |
+| 3 | Le hook LiteLLM ajoute bien le prompt, sans conflit avec Cline ni avec OpenWebUI | Sans lui, ni ARIA ni ARON ne se comportent comme prévu. |
 | 4 | ARIA résiste aux contournements (jeu de tests dans [prompts/ARIA.md](prompts/ARIA.md)) | C'est la raison d'être d'ARIA. |
-| 5 | (Optionnel) un LoRA communautaire, si on en veut un, est compatible avec Qwen3.8 27B en AWQ, et sa licence permet l'usage en établissement | Seulement si le prompt ne suffit pas. |
