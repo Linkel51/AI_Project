@@ -27,7 +27,7 @@ Lors des examens, comme chaque étudiant aura une api qui lui sera propre, les A
 
 ## Le matériel
 
-Pour 70 étudiants (ce qui correspond à deux classes à peu de choses près) qui utilise en simultané les deux IA, on peut estimer qu'il peut être nécessaire d'avoir trois instances de Qwen 3.8 a 27 milliards de paramètres, pour que les deux IA puissent fonctionner correctement et répondre aux demandes des étudiants sans ralentissement. Il faudrait donc pour cela deux cartes graphiques Nvidia optimisées pour l'IA, avec 48Go de VRAM, les Nvidia RTX 6000 Ada ou les Nvidia H100 sont des cartes graphiques qui peuvent convenir pour ce genre de projet ce qui ferait un budget d'environ 20 000€ pour le matériel.
+Pour 70 étudiants (ce qui correspond à deux classes à peu de choses près) qui utilise en simultané les deux IA, on peut estimer qu'il peut être nécessaire d'avoir pluesieurs instances de Qwen 3.8 a 27 milliards de paramètres, pour que les deux IA puissent fonctionner correctement et répondre aux demandes des étudiants sans ralentissement. Il y aurait donc deux possibilités, soit il faudrait deux cartes graphiques Nvidia optimisées pour l'IA, avec 48Go de VRAM, les Nvidia RTX 6000 Ada ou les Nvidia H100 sont des cartes graphiques qui peuvent convenir pour ce genre de projet, soit il faudrait entre 8 et 10 carte graphique plus petite comme des 4090 de 24Go chaucune pour que chacune puisse posséder une IA, ce qui ferait un budget d'environ 20 000€ pour le matériel.
 
 ## L'infrastructure
 
