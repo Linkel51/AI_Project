@@ -1,25 +1,48 @@
-# OpenWebUi
+# OpenWebUI : l'interface d'ARIA
 
 ## Présentation
 
-OpenWebUi est un site web très complet permettant une expèrience très "chatgpt", il est pensé comme un site web open source permet des conversion depuis le compte d'un utilisateur avec une ia via une api.
+OpenWebUI est une interface web open source qui ressemble à ChatGPT : l'utilisateur se connecte avec son compte et discute avec une IA. Elle se branche sur n'importe quel serveur compatible avec l'API OpenAI, ce qui est le cas de LiteLLM.
 
-## Fonctionnalité
+Dans ce projet, OpenWebUI est l'interface d'**ARIA** uniquement. ARON, lui, s'utilise depuis VS Code avec Cline.
 
-### administration
+## Ce qu'elle apporte
 
-Il permet une gestion des comptes qui permet de bloquer un compte si nécessaire d'en créer d'en supprimer etc...
-Il offre aussi la possibilité de renseigner une api pour chaque utilisateur
+**Pour l'administration :**
 
-### utilisateur
+ - création, suppression et blocage de comptes ;
+ - possibilité de renseigner une clé API pour chaque utilisateur ;
+ - gestion des documents consultables par l'IA (« Knowledge », voir [RAG.md](RAG.md)).
 
-Il permet beaucoup de choses :
- - une transcription vocal permettant a l'utilisateur de parler au lieu d'écrire
- - de mettre des fichier (y compris zip) pour que l'ia puisse les lires et les utiliser
- - l'ia peut générer du texte formaté dans des zone des code par exemple ce qui est plus lisible et pratique pour l'utilisateur
- - l'ia peut générer des documents ce qui permet de directement les télécharger juste après
+**Pour l'étudiant :**
 
-## Contraintes
+ - saisie vocale (transcription de la parole) ;
+ - envoi de fichiers, y compris des archives zip, pour que l'IA les lise ;
+ - réponses mises en forme, avec le code dans des blocs dédiés ;
+ - génération de documents téléchargeables.
 
-l'utilisateur ne doit pas avoir accès a sa clé api (c'est le cas chez OpenWebUi)
-l'utilisateur ne doit pas pouvoir utiliser le site (voir ses anciennes conversation ou converser avec une ia) si son accès est bloqué (notamment par le site de gestion d'accès)
+## Comment elle s'intègre
+
+```txt
+Étudiant ---> OpenWebUI ---> LiteLLM (modèle « aria ») ---> vLLM
+                  |
+                  +---> RAG : cours des professeurs
+```
+
+ - OpenWebUI envoie les questions à LiteLLM en demandant le modèle `aria`. LiteLLM ajoute le prompt système d'ARIA (voir [serveur_IA.md](serveur_IA.md)).
+ - Avant d'envoyer la question, OpenWebUI retrouve les passages pertinents des cours (voir [RAG.md](RAG.md)) et les joint à la requête.
+ - Chaque étudiant a sa propre clé ARIA dans LiteLLM, enregistrée dans son compte OpenWebUI.
+
+## Contraintes à respecter
+
+| Contrainte | Où elle est assurée |
+|---|---|
+| L'étudiant ne doit **jamais voir** sa clé API | Fonctionnement d'OpenWebUI (à vérifier dans la version utilisée) |
+| Un compte bloqué ne doit **plus** pouvoir se connecter ni consulter ses anciennes conversations | Blocage du compte par le [portail d'accès](site_acces_IA.md) |
+| L'étudiant ne doit pas pouvoir changer le prompt système d'ARIA | Le prompt est ajouté côté serveur par LiteLLM, pas dans OpenWebUI |
+
+## À vérifier
+
+ - La gestion d'une clé API par utilisateur dans la version d'OpenWebUI retenue.
+ - Les API d'administration permettant au portail de bloquer et débloquer un compte (voir [site_acces_IA.md](site_acces_IA.md)).
+ - L'affichage des sources citées par ARIA lorsqu'elle utilise le RAG.

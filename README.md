@@ -1,83 +1,111 @@
-# ARON ET ARIA
+# ARON et ARIA
 
-- ARON : Assistant de Réalisation Optimisé Numérique
-- ARIA : Assistante de Réflexion Intelligente et d'Aide
+Deux assistants IA pour les étudiants du BUT Réseaux et Télécoms de l'IUT RCC (Châlons-en-Champagne), hébergés sur une infrastructure locale.
 
-Deux IA, deux philosophies, la ou ARON est une ia faite pour être une tête pensante de projet, une IA qui pense a tout, qui fait tout correctement, ARIA est une IA faite pour aider les étudiants à réfléchir, à répondre au questions qui leurs sont posées sans pour autant leur donner la réponse imédiatement, mais plutôt les guider vers la solution par le biais de questions et d'indices.
+| | **ARIA** | **ARON** |
+|---|---|---|
+| Nom | Assistante de Réflexion Intelligente et d'Aide | Assistant de Réalisation Optimisé Numérique |
+| Rôle | Tuteur : aide l'étudiant à comprendre et à trouver par lui-même | Chef de projet et développeur sénior : réalise le travail dans les règles de l'art |
+| Interface | Site web (OpenWebUI) | Extension Cline dans VS Code |
+| Source des connaissances | Cours, TD et TP fournis par les professeurs (RAG) | Ses connaissances de développeur, guidées par un prompt de bonnes pratiques |
+| Donne la réponse ? | Non : questions, indices, reformulations | Oui : il produit le code, la documentation et les tests |
 
-## Des IA connectées
+## Sommaire
 
-Ces deux IA sont conçus pour ne pas être de nouveaux chatgpt, elles sont reliées directement à un moteur de recherche puissant, leurs permettant d'intéroger une base de données fournis par les professeurs de la formation, l'idée c'est que les réponses qu'elles apportent sont fiables et approuvées par les professeurs, elles sont le vecteur de leur savoirs, un élève pose une question à ARIA, ARIA intéroge la base de données du cours en liens et répond à l'élève de cette manière on s'assure de manière maximale de la provenance des informations.
+| Fichier | Contenu |
+|---|---|
+| [Contexte.md](Contexte.md) | D'où vient le projet et qui est concerné |
+| [serveur_IA.md](serveur_IA.md) | Les GPU, le modèle, vLLM, LiteLLM, les prompts |
+| [OpenWebUi.md](OpenWebUi.md) | L'interface web d'ARIA |
+| [RAG.md](RAG.md) | La recherche dans les cours des professeurs |
+| [site_acces_IA.md](site_acces_IA.md) | Le portail de gestion des accès (blocages, examens) |
+| [prompts/ARIA.md](prompts/ARIA.md) | Prompt système d'ARIA et jeu de tests |
+| [prompts/ARON.md](prompts/ARON.md) | Prompt système d'ARON |
 
-## ARIA : une professeure
+## Les idées directrices
 
-ARIA n'est pas une IA classique dans l'apprentissage, il s'agit avant tout d'une IA qui si on lui pose une question, va aider vraiment l'élève a construire un raisonnement, à réfléchir par lui même, dans cette optique, ARIA ne va pas donner la réponse directement, mais plutôt poser des questions à l'élève pour l'aider à trouver la solution par lui même, elle va aussi lui donner des indices pour l'aider à avancer dans sa réflexion.
+**Des IA fiables, pas un nouveau ChatGPT.** ARIA ne répond pas de mémoire : elle interroge la base de documents des professeurs et s'appuie sur elle. Les réponses viennent donc de sources approuvées, et elle indique d'où elles viennent.
 
-## ARON : un chef de projet et un ouvrier sénior
+**ARIA guide, ARON réalise.** ARIA pose des questions et donne des indices progressifs, sans livrer la solution d'un exercice. ARON, au contraire, produit un travail complet : documentation, gestion d'erreurs, typage, tests unitaires, code modulaire.
 
-ARON est une IA faite pour être directement intégré a des outils a l'aide de programme comme CLINE, il est fait pour être directement intégrer a des outils pour travailler sur des projets. Il ne se contente pas de faire le travail de manière bête, mais plutot de le faire en respectant un maximum toute les bonnes pratiques, via une vrai documentations, des gestion d'erreurs, une définitions des types, des test unitaires, une modularité dans la programmations, et autres.
+**Les professeurs gardent la main.** Chaque étudiant a ses propres accès. Les professeurs peuvent bloquer une personne, un groupe ou une salle, pour une durée donnée ou jusqu'à nouvel ordre, par exemple pendant un examen.
 
-## Sous le capot
+## Vue d'ensemble
 
-Ces deux IA fonctionne avec le modèle Qwen 3.8 a 27 milliards de paramètres, c'est un modèle de langage qui comprend le français et l'anglais, capables de comprendre du texte de générer des réponses structurées pour fonctionner avec des outils, et de générer du code complexe avec de gros contextes.
+```txt
++-------------------+  +-------------------+  +-------------------+
+| Navigateur        |  | Navigateur        |  | VS Code + Cline   |
+| (professeur)      |  | (étudiant / prof) |  | (étudiant)        |
++---------+---------+  +---------+---------+  +---------+---------+
+          |                      |                      |
+          v                      v                      |
++-------------------+  +-------------------+            |
+|  PORTAIL D'ACCÈS  |->|     OpenWebUI     |            |
+|  comptes, clés,   |  |  interface ARIA   |            |
+|  blocages         |  |  + RAG des cours  |            |
++---------+---------+  +---------+---------+            |
+          |                      |                      |
+          v                      v                      v
++-----------------------------------------------------------------+
+|                             LiteLLM                             |
+|    clés API, ajout du prompt ARIA / ARON, répartition de charge |
++-----------------------------------------------------------------+
+                                 |
+                                 v
++-----------------------------------------------------------------+
+|        vLLM + Qwen3.8 27B (4 bits), un conteneur par GPU        |
++-----------------------------------------------------------------+
+```
 
-Pour tenir sur des cartes de 24 Go, le modèle est utilisé quantifié en 4 bits (AWQ, environ 17 Go). Voir [Le serveur IA](<Le serveur IA>) pour le détail et les points restant à valider.
+Lecture du schéma :
 
-## Les examins 
+1. L'étudiant parle à **ARIA** depuis le navigateur. OpenWebUI cherche dans les cours (RAG), puis envoie la question à LiteLLM avec la clé ARIA de l'étudiant.
+2. L'étudiant travaille avec **ARON** depuis VS Code. Cline envoie ses requêtes directement à LiteLLM avec la clé ARON de l'étudiant.
+3. **LiteLLM** vérifie la clé, ajoute le prompt système d'ARIA ou d'ARON, puis choisit un GPU disponible.
+4. **vLLM** fait tourner le modèle et renvoie la réponse.
+5. Le **portail d'accès** agit sur OpenWebUI (comptes) et sur LiteLLM (clés) pour bloquer ou débloquer des étudiants. Les professeurs ajoutent leurs cours dans OpenWebUI.
 
-Lors des examens, comme chaque étudiant aura une api qui lui sera propre, les API des étudiants appartenant à un groupe donné pourront être bloquées, de cette manière les étudiants ne pourront pas s'aider d'ARON et n'auront pas accès à ARIA, les api s'accompagneront d'une mot de passe obligatoire, de cette manière il sera très difficile pour un étudiant d'utiliser ces deux IA pour tricher pendant un examen (le blocage ne couvre pas les IA externes ou un téléphone personnel).
+## Le modèle
+
+Les deux IA utilisent le même modèle de base, **Qwen3.8 27B**, qui comprend le français et l'anglais, gère les outils et génère du code. Pour tenir sur une carte de 24 Go, il est utilisé quantifié en 4 bits (AWQ, environ 17 Go). La différence entre ARIA et ARON vient du **prompt système**, ajouté par LiteLLM, pas d'un entraînement différent. Détails dans [serveur_IA.md](serveur_IA.md).
 
 ## Le matériel
 
-Pour 70 étudiants (ce qui correspond à deux classes à peu de choses près) qui utilise en simultané les deux IA, on peut estimer qu'il peut être nécessaire d'avoir pluesieurs instances de Qwen 3.8 a 27 milliards de paramètres, pour que les deux IA puissent fonctionner correctement et répondre aux demandes des étudiants sans ralentissement. Il y aurait donc deux possibilités, soit il faudrait deux cartes graphiques Nvidia optimisées pour l'IA, avec 48Go de VRAM, les Nvidia RTX 6000 Ada ou les Nvidia H100 sont des cartes graphiques qui peuvent convenir pour ce genre de projet, soit il faudrait entre 8 et 10 carte graphique plus petite comme des 4090 de 24Go chaucune pour que chacune puisse posséder une IA, ce qui ferait un budget d'environ 20 000€ pour le matériel. Avec le modèle quantifié en 4 bits, on estime 2 à 4 sessions confortables par carte, soit environ 16 à 32 sessions en parallèle avec 8 cartes, ce qui est suffisant pour 70 étudiants car ils n'envoient pas tous une requête en même temps. Ce chiffre doit être confirmé par un test de charge sur une carte avant l'achat. Le RAG d'ARIA (embedding et reranker) demande en plus une petite carte dédiée de 8 à 12 Go, voir [RAG](RAG.md).
+Cible : environ 70 étudiants (deux classes) qui peuvent utiliser les IA en même temps.
 
-## L'infrastructure
+| Option | Description | Remarque |
+|---|---|---|
+| **A (architecture de référence)** | 8 à 10 cartes de 24 Go (type RTX 4090), un conteneur vLLM par carte | Environ 20 000 € ; estimation de 2 à 4 sessions confortables par carte, soit 16 à 32 sessions en parallèle avec 8 cartes |
+| **B** | 2 cartes de 48 Go (RTX 6000 Ada) ou H100 | Moins d'instances, mais chacune a plus de mémoire pour les longs contextes |
 
-```txt
-+--------------------+
-|     vLLM avec      |
-|   2*48Go de VRAM   |
-+---------+----------+
-          ⬇
-+---------+----------+
-|        CUDA        |
-+---------+----------+
-          ⬇
-+---------+----------+                +--------------------+
-|    qwen 3.8 27b    |                |   BASE DE DONNEE   |
-+----+-----------+---+                |     DES PROFS      |
-     |           |                    +---------+----------+
-     |           |                              ⬇
-     |           |                    +---------+----------+
-     |           |                    |     NAVIGATEUR     |
-     |           |                    +---------+----------+
-     |           |                              ⬆
-     |           |                    +---------+----------+
-     |           |                    |   AUTENTIFICATION  |
-     |           |                    +---------+----------+
-     |           ⬇                   ↗          ⬆
-     |         +-+------------------+           |
-     |         |   INTERFACE WEB    |           |
-     |         |        ARIA        |           |
-     |         +--------------------+           |
-     |                                          |
-     |                                +---------+----------+
-     |                                | SITE DE GESTION    |
-     |                                | DES ACCES          |
-     |                                | UTILISATEUR (PROF) |
-     |                                +---------+----------+
-     |                                          |
-     |         +--------------------+           |
-     +-------➡|    GESTION DES     +           |
-               |        API         |           |
-               +---------+----------+           |
-                         |                      ⬇
-                         |            +---------+----------+
-                         +----------➡|        API         |
-                                      |   AUTENTIFICATION  |
-                                      +---------+----------+
-                                                ⬇
-                                      +---------+----------+
-                                      |        CLINE       |
-                                      +--------------------+
-```
+À ajouter dans les deux cas : une **petite carte dédiée de 8 à 12 Go** pour l'embedding et le reranker du RAG (voir [RAG.md](RAG.md)).
+
+Ces capacités sont des **estimations**. 70 étudiants ne veulent pas dire 70 requêtes simultanées, mais ARON (Cline) envoie de gros contextes qui consomment beaucoup de mémoire. Un test de charge sur une seule carte doit confirmer les chiffres avant tout achat.
+
+Les RTX 4090 sont des cartes grand public ; leur licence peut les interdire en datacenter. Cela se vérifie avant l'achat si le serveur est hébergé dans un établissement.
+
+## Les examens
+
+Chaque étudiant a deux clés API personnelles (une pour ARIA, une pour ARON). Le portail d'accès peut bloquer toutes les clés d'un groupe, d'une salle ou d'une personne pendant un examen. Les étudiants concernés n'ont alors plus accès ni à ARIA ni à ARON.
+
+Cela réduit fortement les possibilités de tricher avec **nos** IA. Cela ne couvre pas les IA extérieures ni un téléphone personnel : c'est une mesure d'aide à la surveillance, pas une garantie.
+
+## État du projet
+
+Le dépôt ne contient pour l'instant que de la documentation. Rien n'est encore installé.
+
+**À valider avant d'acheter le matériel** (détail dans [serveur_IA.md](serveur_IA.md)) :
+
+1. Qwen3.8 27B en AWQ 4 bits démarre avec vLLM sur **une seule** carte de 24 Go.
+2. Combien de requêtes en parallèle une carte supporte avant que la latence ne devienne gênante, avec le RAG actif.
+3. L'injection des prompts par LiteLLM fonctionne avec Cline et OpenWebUI.
+4. ARIA résiste aux tentatives de contournement (jeu de tests dans [prompts/ARIA.md](prompts/ARIA.md)).
+5. Les API d'OpenWebUI et de LiteLLM permettent bien les blocages décrits dans [site_acces_IA.md](site_acces_IA.md).
+
+**Étapes envisagées :**
+
+1. Prototype sur une carte : vLLM, LiteLLM, OpenWebUI, ARIA avec RAG sur deux ou trois cours.
+2. Test avec quelques étudiants et un professeur, mesure de la charge réelle.
+3. Portail de gestion des accès.
+4. ARON avec Cline.
+5. Montée en charge (achat des cartes restantes).

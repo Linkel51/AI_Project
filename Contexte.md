@@ -1,9 +1,18 @@
-Je suis étudiant en BUT Réseau et télécoms dans l'iut RCC au campus de Chalons-en-champagne
+# Contexte du projet
 
-mon BUT a déjà fait énormément de projet, il a beaucoup d'infrastructure couteuse (anneau optique uniquement dans le BUT, serveur de virtualisation) serveur du BUT, serveur pour des partenaire de notre BUT
+## Qui
 
-plusieur élève ont déjà fait des projet pour les datacenters avec les prof
+Étudiant en BUT Réseaux et Télécoms à l'IUT RCC, campus de Châlons-en-Champagne.
 
-ma mère est cadre a l'iut RCC et elle connait bien un de mes prof qui est le directeur adjoint de mon département
+## L'environnement
 
-mon pro m'aime bien et j'ai déjà fait un projet site web que j'ai fait avec lui et la donc je vroudrais en faire un nouveau plus ambitieux
+Le BUT a déjà mené de nombreux projets et dispose d'une infrastructure importante et coûteuse : un anneau optique propre au département, des serveurs de virtualisation, des serveurs du BUT et des serveurs hébergés pour des partenaires. D'autres étudiants ont déjà réalisé des projets de datacenter avec les professeurs.
+
+## Les appuis
+
+ - Le directeur adjoint du département connaît et apprécie le porteur du projet, qui a déjà réalisé avec lui un projet de site web.
+ - Un cadre de l'IUT connaît bien ce professeur.
+
+## L'ambition
+
+Faire un projet plus ambitieux que le précédent : proposer à l'ensemble des étudiants deux assistants IA fonctionnant sur l'infrastructure de l'IUT, avec des données qui restent dans l'établissement et un contrôle des accès par les professeurs. Le détail du projet est dans le [README](README.md).

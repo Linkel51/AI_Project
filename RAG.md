@@ -9,24 +9,37 @@ Il est intégré à OpenWebUI (fonction "Knowledge"), il n'y a donc pas de moteu
 ## Le principe
 
 ```txt
-Question de l'élève
-        |
-+-------------------+
-|   Embedding       |  transforme la question en vecteur
-+---------+---------+
-          |
-+---------+---------+
-|  Recherche        |  vecteurs + mots-clés (BM25) dans la base des cours
-|  hybride          |
-+---------+---------+
-          |  20 à 50 candidats
-+---------+---------+
-|    Reranker       |  reclasse les candidats, garde les 3 à 5 meilleurs
-+---------+---------+
-          |
-+---------+---------+
-|  Qwen + lora ARIA |  répond avec les extraits, en citant les sources
-+-------------------+
++---------------------------+
+|     Question de l'élève   |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|        Embedding          |
+|  question -> vecteur      |
++-------------+-------------+
+              |
+              v
++---------------------------+
+|     Recherche hybride     |
+|  vecteurs + mots-clés     |
+|  (BM25) dans les cours    |
++-------------+-------------+
+              |  20 à 50 candidats
+              v
++---------------------------+
+|        Reranker           |
+|  garde les 3 à 5 meilleurs|
++-------------+-------------+
+              |
+              v
++---------------------------+
+|  LiteLLM (modèle « aria »)|
+|  + prompt d'ARIA          |
+|  -> Qwen répond avec les  |
+|     extraits et les       |
+|     sources               |
++---------------------------+
 ```
 
 L'indexation (découpage des documents en blocs puis calcul des vecteurs) se fait une seule fois, quand un professeur ajoute un document. Elle peut être lente sans gêner les élèves.
