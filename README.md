@@ -19,6 +19,7 @@ Deux assistants IA pour les étudiants du BUT Réseaux et Télécoms de l'IUT RC
 | [OpenWebUi.md](OpenWebUi.md) | L'interface web d'ARIA |
 | [RAG.md](RAG.md) | La recherche dans les cours des professeurs |
 | [site_acces_IA.md](site_acces_IA.md) | Le portail de gestion des accès (blocages, examens) |
+| [plan_projet.md](plan_projet.md) | Étapes, budget, risques, RGPD |
 | [prompts/ARIA.md](prompts/ARIA.md) | Prompt système d'ARIA et jeu de tests |
 | [prompts/ARON.md](prompts/ARON.md) | Prompt système d'ARON |
 
@@ -75,12 +76,14 @@ Cible : environ 70 étudiants (deux classes) qui peuvent utiliser les IA en mêm
 
 | Option | Description | Remarque |
 |---|---|---|
-| **A (architecture de référence)** | 8 à 10 cartes de 24 Go (type RTX 4090), un conteneur vLLM par carte | Environ 20 000 € ; estimation de 2 à 4 sessions confortables par carte, soit 16 à 32 sessions en parallèle avec 8 cartes |
-| **B** | 2 cartes de 48 Go (RTX 6000 Ada) ou H100 | Moins d'instances, mais chacune a plus de mémoire pour les longs contextes |
+| **A (architecture de référence)** | 8 à 10 cartes de 24 Go (type RTX 4090), un conteneur vLLM par carte | Environ 24 500 à 38 000 € avec les serveurs ; estimation de 2 à 4 sessions confortables par carte, soit 16 à 32 sessions en parallèle avec 8 cartes |
+| **B** | 2 cartes de 48 Go (RTX 6000 Ada) ou H100 | Environ 19 000 à 29 000 € ; moins d'instances, mais chacune a plus de mémoire pour les longs contextes, et bien moins de consommation |
 
 À ajouter dans les deux cas : une **petite carte dédiée de 8 à 12 Go** pour l'embedding et le reranker du RAG (voir [RAG.md](RAG.md)).
 
 Ces capacités sont des **estimations**. 70 étudiants ne veulent pas dire 70 requêtes simultanées, mais ARON (Cline) envoie de gros contextes qui consomment beaucoup de mémoire. Un test de charge sur une seule carte doit confirmer les chiffres avant tout achat.
+
+Le détail des prix, de la consommation et des risques est dans [plan_projet.md](plan_projet.md).
 
 Les RTX 4090 sont des cartes grand public ; leur licence peut les interdire en datacenter. Cela se vérifie avant l'achat si le serveur est hébergé dans un établissement.
 
